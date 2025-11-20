@@ -1,18 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tailscale Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 1.1rem;
+    }
+
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .device-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .device-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+    }
+
+    .device-card a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .device-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+      word-break: break-word;
+    }
+
+    .device-hostname {
+      color: #718096;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      word-break: break-all;
+    }
+
+    .device-link {
+      display: inline-flex;
+      align-items: center;
+      color: #667eea;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      background: #f7fafc;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .device-link:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .device-link::after {
+      content: "→";
+      margin-left: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .empty-state {
+      background: white;
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+      color: #718096;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .devices-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Containers on Tailscale</h1>
-  <ul>
-    <% @devices.each do |device| %>
-      <li>
-        <a href="https://<%= device["name"] %>">
-          <%= device["hostname"] %> (<%= device["name"] %>)
-        </a>
-      </li>
+  <div class="container">
+    <header>
+      <h1>🔗 Tailscale Dashboard</h1>
+      <p class="subtitle">Your containerized services on Tailscale</p>
+    </header>
+
+    <% if @devices.empty? %>
+      <div class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <p class="empty-state-text">No containers found with tag:container</p>
+      </div>
+    <% else %>
+      <ul class="devices-grid">
+        <% @devices.each do |device| %>
+          <li class="device-card">
+            <a href="https://<%= device["name"] %>">
+              <div class="device-name"><%= device["hostname"] %></div>
+              <div class="device-hostname"><%= device["name"] %></div>
+              <span class="device-link">Open Service</span>
+            </a>
+          </li>
+        <% end %>
+      </ul>
     <% end %>
-  </ul>
+  </div>
 </body>
 </html>
