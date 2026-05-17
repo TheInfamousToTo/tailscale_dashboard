@@ -82,14 +82,16 @@
       <ul class="devices-grid" id="devices-grid">
         <% @devices.each do |device| %>
           <% 
-            # Detect port from tag
+            # Detect port from tag and keep HTTPS unless HTTP is explicitly requested
             port = ""
+            protocol = "https://"
             device["tags"]&.each do |tag|
               if tag =~ /^tag:port-(\d+)$/
                 port = ":#{$1}"
+              elsif tag == "tag:proto-http"
+                protocol = "http://"
               end
             end
-            protocol = port.empty? ? "https://" : "http://"
             url = "#{protocol}#{device['name']}#{port}"
 
             # Check if recently seen (e.g. within 5 minutes)
